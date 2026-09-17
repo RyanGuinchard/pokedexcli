@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/ryanguinchard/pokedexcli/internal/pokeapi"
 )
 
-func main() {
+func startREPL(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
-
-	// loop for user input until the program is exited
 	for {
 		fmt.Print("Pokedex > ")
 		if !scanner.Scan() {
@@ -22,21 +23,32 @@ func main() {
 			continue
 		}
 
+		// Get the command name from the first word of the input
 		commandName := words[0]
 
-		command, exists := getCommands()[commandName]
+		command, exists := cfg.commands[commandName]
 		if !exists {
 			fmt.Println("Unknown command")
 			continue
 		}
-		err := command.callback()
+		err := command.callback(cfg)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 	}
-
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading input: %v", err)
 	}
+}
+
+func main() {
+	nextLocationURL := "https://pokeapi.co/api/v2/location-area?offset=0&limit=20"
+	cfg := &config{
+		commands:        getCommands(),
+		pokeapiClient:   pokeapi.NewClient(5 * time.Second),
+		nextLocationURL: &nextLocationURL,
+	}
+	startREPL(cfg)
+
 }

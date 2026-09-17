@@ -1,11 +1,22 @@
 package main
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/ryanguinchard/pokedexcli/internal/pokeapi"
+)
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
+}
+
+type config struct {
+	commands        map[string]cliCommand
+	pokeapiClient   *pokeapi.Client
+	nextLocationURL *string
+	prevLocationURL *string
 }
 
 func getCommands() map[string]cliCommand {
@@ -19,6 +30,16 @@ func getCommands() map[string]cliCommand {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays a map of the Pokemon world",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous map of the Pokemon world",
+			callback:    commandMapB,
 		},
 	}
 }
