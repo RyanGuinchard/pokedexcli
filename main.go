@@ -26,12 +26,14 @@ func startREPL(cfg *config) {
 		// Get the command name from the first word of the input
 		commandName := words[0]
 
+		args := words[1:]
+
 		command, exists := cfg.commands[commandName]
 		if !exists {
 			fmt.Println("Unknown command")
 			continue
 		}
-		err := command.callback(cfg)
+		err := command.callback(cfg, args...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -46,7 +48,7 @@ func main() {
 	nextLocationURL := "https://pokeapi.co/api/v2/location-area?offset=0&limit=20"
 	cfg := &config{
 		commands:        getCommands(),
-		pokeapiClient:   pokeapi.NewClient(5 * time.Second),
+		pokeapiClient:   pokeapi.NewClient(5*time.Second, 5*time.Minute),
 		nextLocationURL: &nextLocationURL,
 	}
 	startREPL(cfg)
