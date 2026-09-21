@@ -50,6 +50,7 @@ func main() {
 		commands:        getCommands(),
 		pokeapiClient:   pokeapi.NewClient(5*time.Second, 5*time.Minute),
 		nextLocationURL: &nextLocationURL,
+		caughtPokemon:   make(map[string]pokeapi.Pokemon),
 	}
 	startREPL(cfg)
 
